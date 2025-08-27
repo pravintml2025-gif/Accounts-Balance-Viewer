@@ -144,6 +144,10 @@ business accounts (R&D, Canteen, CEO’s car, Marketing, Parking fines)
 
 months of balance history
 
+# Tests
+
+The Tests project contains all backend unit tests. Running the backend project will automatically execute all test cases to verify functionality.
+
 # Default Login Credentials
 
 Admin: admin@adra.com / Admin@123
