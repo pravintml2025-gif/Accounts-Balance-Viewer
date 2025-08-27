@@ -122,13 +122,11 @@ SQL Server (LocalDB, Express, or full instance)
 
 Visual Studio Code or Visual Studio 2022
 
-# The project is hosted on GitHub and can be cloned using the following URL:
-
 # Database Configuration
 
 Update appsettings.Development with your SQL Server settings.
 
-# Fron end Configuration
+# Front end Configuration
 
 Update the Angular environment file with your API URL.
 
@@ -146,10 +144,10 @@ months of balance history
 
 # Tests
 
-The Tests project contains all backend unit tests. Running the backend project will automatically execute all test cases to verify functionality.
+The Tests project contains all backend unit tests. Running the Tests project will automatically execute all test cases to verify functionality.
 
 # Default Login Credentials
 
-Admin: admin@adra.com / Admin@123
+Admin: admin / Admin@123
 
-User: john.doe@adra.com / User@123
+User: john.doe / User@123
