@@ -1,0 +1,223 @@
+<div class="upload-container">
+  <div class="dashboard-content">
+    <!-- Period Header -->
+    <mat-card class="period-card">
+      <div class="period-header">
+        <mat-card-title class="period-title">Upload Balance File</mat-card-title>
+      </div>
+    </mat-card>
+
+  <!-- Upload Form -->
+  <mat-card class="upload-card">
+    <mat-card-header>
+      <mat-card-title>File Upload</mat-card-title>
+      <mat-card-subtitle>Select or drag & drop your balance file</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="uploadForm" (ngSubmit)="onUpload()" class="upload-form">
+        
+        <!-- File Drop Zone -->
+        <div 
+          class="drop-zone"
+          [class.drag-over]="isDragOver"
+          [class.has-file]="selectedFile"
+          (dragover)="onDragOver($event)"
+          (dragleave)="onDragLeave($event)"
+          (drop)="onDrop($event)">
+          
+          <!-- No File Selected State -->
+          <div *ngIf="!selectedFile" class="drop-zone-content">
+            <mat-icon class="upload-icon">cloud_upload</mat-icon>
+            <h3>Drop your file here</h3>
+            <p>or</p>
+            <button type="button" mat-raised-button color="primary" (click)="fileInput.click()">
+              <mat-icon>attach_file</mat-icon>
+              Choose File
+            </button>
+            <input 
+              #fileInput 
+              type="file" 
+              accept=".csv,.xlsx,.xls,.tsv"
+              style="display: none"
+              (change)="onFileSelected($event)">
+            <p class="file-info">Supported formats: CSV, Excel (.xlsx, .xls), TSV</p>
+            <p class="file-info">Maximum file size: 10MB</p>
+          </div>
+
+          <!-- File Selected State -->
+          <div *ngIf="selectedFile" class="selected-file">
+            <div class="file-details">
+              <mat-icon class="file-icon">{{ getFileIcon() }}</mat-icon>
+              <div class="file-info">
+                <h4>{{ selectedFile.name }}</h4>
+                <p>{{ formatFileSize(selectedFile.size) }}</p>
+              </div>
+              <button type="button" mat-icon-button color="warn" (click)="onClear()">
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Progress Bar -->
+        <mat-progress-bar 
+          *ngIf="isUploading" 
+          mode="indeterminate"
+          class="upload-progress">
+        </mat-progress-bar>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button 
+            type="button" 
+            mat-button 
+            routerLink="/balances">
+            <mat-icon>arrow_back</mat-icon>
+            Back to Balances
+          </button>
+          
+          <div class="action-buttons">
+            <button 
+              type="button" 
+              mat-button 
+              (click)="onClear()"
+              [disabled]="!selectedFile || isUploading">
+              <mat-icon>clear</mat-icon>
+              Clear
+            </button>
+            
+            <button 
+              type="submit" 
+              mat-raised-button 
+              color="primary"
+              [disabled]="!selectedFile || isUploading">
+              <mat-icon *ngIf="!isUploading">cloud_upload</mat-icon>
+              <mat-icon *ngIf="isUploading">hourglass_empty</mat-icon>
+              {{ isUploading ? 'Uploading...' : 'Upload File' }}
+            </button>
+          </div>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Upload Result -->
+  <mat-card *ngIf="uploadResult" class="result-card" [ngClass]="getResultCardClass()">
+    <mat-card-header>
+      <mat-card-title class="result-title">
+        <mat-icon [ngClass]="getResultIconClass()">{{ getResultIcon() }}</mat-icon>
+        Upload Result
+      </mat-card-title>
+    </mat-card-header>
+    
+    <mat-card-content>
+      <div class="result-summary">
+        <p class="result-message">{{ uploadResult.message }}</p>
+        
+        <div class="result-stats" *ngIf="uploadResult.success">
+          <div class="stat-item">
+            <span class="stat-label">Processed Records:</span>
+            <span class="stat-value success">{{ uploadResult.processedRecords }}</span>
+          </div>
+          <div class="stat-item" *ngIf="uploadResult.skippedRecords > 0">
+            <span class="stat-label">Skipped Records:</span>
+            <span class="stat-value warning">{{ uploadResult.skippedRecords }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Invalid Accounts Warning -->
+      <mat-expansion-panel *ngIf="invalidAccounts.length > 0" class="warning-panel">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <mat-icon color="warn">warning</mat-icon>
+            Invalid Accounts ({{ invalidAccounts.length }})
+          </mat-panel-title>
+          <mat-panel-description>
+            These accounts were not found in the system
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+        
+        <div class="invalid-accounts-content">
+          <p class="warning-text">
+            The following accounts do not exist in the system and were skipped:
+          </p>
+          
+          <mat-divider></mat-divider>
+          
+          <mat-list class="account-list">
+            <mat-list-item *ngFor="let account of invalidAccounts">
+              <mat-icon matListItemIcon color="warn">error_outline</mat-icon>
+              <div matListItemTitle>{{ account }}</div>
+            </mat-list-item>
+          </mat-list>
+          
+          <mat-divider></mat-divider>
+          
+          <div class="action-note">
+            <mat-icon color="primary">info</mat-icon>
+            <p>Please contact your administrator to create these accounts before uploading balances for them.</p>
+          </div>
+        </div>
+      </mat-expansion-panel>
+
+      <!-- Error Details -->
+      <mat-expansion-panel *ngIf="uploadResult.errors.length > 0 && invalidAccounts.length === 0" class="error-panel">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <mat-icon color="warn">error</mat-icon>
+            Error Details ({{ uploadResult.errors.length }})
+          </mat-panel-title>
+          <mat-panel-description>
+            View detailed error information
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+        
+        <div class="error-content">
+          <mat-list class="error-list">
+            <mat-list-item *ngFor="let error of uploadResult.errors">
+              <mat-icon matListItemIcon color="warn">error_outline</mat-icon>
+              <div matListItemTitle>{{ error }}</div>
+            </mat-list-item>
+          </mat-list>
+        </div>
+      </mat-expansion-panel>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Upload Guidelines -->
+  <mat-card class="guidelines-card">
+    <mat-card-header>
+      <mat-card-title>Upload Guidelines</mat-card-title>
+    </mat-card-header>
+    
+    <mat-card-content>
+      <div class="guidelines">
+        <div class="guideline-item">
+          <mat-icon color="primary">info</mat-icon>
+          <div>
+            <h4>File Format</h4>
+            <p>Ensure your file contains columns for Account Number, Account Name, and Balance Amount.</p>
+          </div>
+        </div>
+        
+        <div class="guideline-item">
+          <mat-icon color="primary">warning</mat-icon>
+          <div>
+            <h4>Data Validation</h4>
+            <p>All balance amounts should be numeric values. Invalid entries will be reported after upload.</p>
+          </div>
+        </div>
+        
+        <div class="guideline-item">
+          <mat-icon color="primary">security</mat-icon>
+          <div>
+            <h4>Data Security</h4>
+            <p>Your uploaded file will be processed securely and deleted after processing.</p>
+          </div>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

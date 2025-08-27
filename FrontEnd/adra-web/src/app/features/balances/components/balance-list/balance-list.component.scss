@@ -1,0 +1,191 @@
+.balance-list-container {
+  padding: 0;
+  height: 100vh;
+  background-color: #f5f5f5;
+}
+
+.dashboard-content {
+  padding: 24px;
+  width: 100%;
+  margin: 0 auto;
+
+  // Responsive padding for better space utilization
+  @media (min-width: 1920px) {
+    padding: 24px 48px;
+  }
+
+  @media (min-width: 2560px) {
+    padding: 24px 80px;
+  }
+
+  @media (max-width: 768px) {
+    padding: 16px;
+  }
+}
+
+.period-card {
+  margin-bottom: 24px;
+  background: linear-gradient(45deg, #1976d2, #42a5f5);
+  color: white;
+  position: relative;
+
+  .period-header {
+    padding: 24px;
+    position: relative;
+  }
+
+  .period-title {
+    font-size: 1.5rem;
+    font-weight: 500;
+    margin: 0;
+    text-align: center;
+  }
+
+  .refresh-button {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    color: white;
+    
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+  }
+}
+
+.period-selection-card {
+  margin-bottom: 24px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+
+  .period-form {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+
+    mat-form-field {
+      min-width: 120px;
+    }
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+      gap: 8px;
+
+      mat-form-field {
+        width: 100%;
+      }
+    }
+  }
+}
+
+.balance-card {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+  border-radius: 8px;
+
+  mat-card-content {
+    padding: 0;
+  }
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  gap: 1rem;
+
+  mat-spinner {
+    margin-bottom: 1rem;
+  }
+
+  p {
+    margin: 0;
+    color: rgba(0, 0, 0, 0.6);
+  }
+}
+
+.table-container {
+  .balance-table {
+    width: 100%;
+
+    th.mat-header-cell {
+      font-weight: 600;
+      color: rgba(0, 0, 0, 0.87);
+      border-bottom: 2px solid #e0e0e0;
+    }
+
+    td.mat-cell {
+      border-bottom: 1px solid #f5f5f5;
+    }
+
+    .amount-cell {
+      font-weight: 500;
+      color: #2e7d32;
+      font-family: 'Roboto Mono', monospace;
+    }
+
+    tr.mat-row:hover {
+      background-color: #f5f5f5;
+    }
+
+    tr.mat-row:nth-child(even) {
+      background-color: #fafafa;
+    }
+  }
+
+  .no-data {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+    text-align: center;
+
+    .no-data-icon {
+      font-size: 4rem;
+      width: 4rem;
+      height: 4rem;
+      color: rgba(0, 0, 0, 0.3);
+      margin-bottom: 1rem;
+    }
+
+    p {
+      margin: 0 0 1.5rem 0;
+      color: rgba(0, 0, 0, 0.6);
+      font-size: 1.1rem;
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .balance-list-container {
+    padding: 0.5rem;
+
+    .balance-table {
+      font-size: 0.875rem;
+
+      th, td {
+        padding: 8px 4px;
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .balance-list-container {
+    .toolbar {
+      .title {
+        font-size: 1rem;
+      }
+    }
+
+    .balance-table {
+      th, td {
+        &:not(:first-child):not(:nth-child(2)) {
+          display: none;
+        }
+      }
+    }
+  }
+}

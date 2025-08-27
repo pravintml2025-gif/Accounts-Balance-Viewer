@@ -1,0 +1,124 @@
+<div class="balance-summary-container">
+  <!-- Dashboard Header -->
+  <div class="dashboard-header">
+    <div class="header-content">
+      <div class="header-text">
+        <h1 class="dashboard-title">Financial Dashboard</h1>
+        <p class="dashboard-subtitle">Balances as of {{ getCurrentMonthYear() }}</p>
+      </div>
+      <div class="header-actions">
+        <button mat-fab color="primary" (click)="onRefresh()" matTooltip="Refresh Data" class="refresh-fab">
+          <mat-icon>refresh</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="dashboard-content">
+    <!-- Statistics Overview -->
+    <div *ngIf="!isLoading && summaries.length > 0 && isAdmin" class="stats-overview">
+      <div class="stat-card total-accounts">
+        <div class="stat-icon">
+          <mat-icon>account_balance</mat-icon>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ summaries.length }}</div>
+          <div class="stat-label">Total Accounts</div>
+        </div>
+      </div>
+      
+      <div class="stat-card total-balance">
+        <div class="stat-icon positive">
+          <mat-icon>trending_up</mat-icon>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ getTotalBalance() }}</div>
+          <div class="stat-label">Total Balance</div>
+        </div>
+      </div>
+      
+      <div class="stat-card positive-accounts">
+        <div class="stat-icon positive">
+          <mat-icon>account_balance_wallet</mat-icon>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ getPositiveAccountsCount() }}</div>
+          <div class="stat-label">Positive Balances</div>
+        </div>
+      </div>
+      
+      <div class="stat-card negative-accounts">
+        <div class="stat-icon negative">
+          <mat-icon>warning</mat-icon>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ getNegativeAccountsCount() }}</div>
+          <div class="stat-label">Overdrawn</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-container">
+      <div class="loading-content">
+        <mat-spinner diameter="60" strokeWidth="4"></mat-spinner>
+        <h3>Loading Financial Data</h3>
+        <p>Fetching the latest account balances...</p>
+      </div>
+    </div>
+
+    <!-- Balance Cards Grid -->
+    <div *ngIf="!isLoading && summaries.length > 0" class="balance-grid">
+      <div *ngFor="let summary of summaries; trackBy: trackByAccount" class="balance-card" 
+           [ngClass]="getCardClass(summary.totalAmount)">
+        <div class="card-decoration"></div>
+        
+        <div class="card-header">
+          <div class="account-avatar">
+            <mat-icon>{{ getAccountIcon(summary.accountName) }}</mat-icon>
+          </div>
+          <div class="account-details">
+            <h3 class="account-name">{{ summary.accountName }}</h3>
+            <div class="account-meta">
+              <mat-chip class="record-count-chip">{{ summary.recordCount }} records</mat-chip>
+              <mat-chip class="period-chip">{{ summary.periodDisplay }}</mat-chip>
+            </div>
+          </div>
+          <div class="balance-status" [ngClass]="getBalanceClass(summary.totalAmount)">
+            <mat-icon>{{ getStatusIcon(summary.totalAmount) }}</mat-icon>
+          </div>
+        </div>
+        
+        <div class="card-content">
+          <div class="balance-display">
+            <div class="amount" [ngClass]="getBalanceClass(summary.totalAmount)">
+              {{ summary.formattedAmount || formatAmount(summary.totalAmount) }}
+            </div>
+            <div class="last-updated">
+              Last updated: {{ summary.lastUpdatedAt | date:'medium' }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- No Data State -->
+    <div *ngIf="!isLoading" class="no-data-container">
+      <div class="no-data-content">
+        <mat-icon *ngIf="summaries.length === 0" class="no-data-icon">account_balance</mat-icon>
+        <h2 *ngIf="summaries.length === 0">No Financial Summary Available</h2>
+        <p *ngIf="summaries.length === 0">No account balance summaries are available. This could mean no balance data has been uploaded yet.</p>
+        <div class="no-data-actions">
+          <button *ngIf="isAdmin" mat-raised-button color="primary" routerLink="/balances/upload" class="enhanced-btn upload-btn">
+            <mat-icon>cloud_upload</mat-icon>
+            <span>Upload Balance Data</span>
+          </button>
+          <button  *ngIf="isAdmin" mat-raised-button color="accent" routerLink="/balances/list" class="enhanced-btn view-btn">
+            <mat-icon>analytics</mat-icon>
+            <span>View All Records</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
